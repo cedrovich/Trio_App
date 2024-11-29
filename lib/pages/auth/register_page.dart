@@ -34,10 +34,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Método para registrar al usuario
   Future<void> _signUp() async {
-    final fullName = _fullNameController.text;
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    final phoneNumber = _phoneNumberController.text;
+    final fullName = _fullNameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final phoneNumber = _phoneNumberController.text.trim();
+
+    // Validaciones básicas
+    if (fullName.isEmpty || email.isEmpty || password.isEmpty || phoneNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor completa todos los campos.')),
+      );
+      return;
+    }
 
     if (_birthDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -55,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (response.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.error!.message)),
+          SnackBar(content: Text('Error al registrar usuario: ${response.error!.message}')),
         );
         return;
       }
@@ -64,34 +72,36 @@ class _RegisterPageState extends State<RegisterPage> {
       final userId = response.user?.id;
       if (userId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al registrar el usuario. Inténtalo de nuevo.')),
+          const SnackBar(content: Text('No se pudo obtener el ID del usuario. Inténtalo de nuevo.')),
         );
         return;
       }
 
+      // Agregar un pequeño retraso para evitar problemas de sincronización
+      await Future.delayed(const Duration(milliseconds: 500));
+
       // Paso 2: Insertar los datos adicionales en la tabla 'users'
-      final insertResponse = await Supabase.instance.client
-          .from('users') // Nombre de tu tabla personalizada
-          .insert({
-            'user_id': userId, // Relacionar con auth.users
-            'full_name': fullName,
-            'email': email,
-            'birth_date': _birthDate!.toIso8601String(),
-            'phone_number': phoneNumber,
-          })
-          .select()
-          .single();
+      final insertResponse = await Supabase.instance.client.from('users').insert({
+        'user_id': userId, // Relacionar con auth.users
+        'full_name': fullName,
+        'email': email,
+        'birth_date': _birthDate!.toIso8601String(),
+        'phone_number': phoneNumber,
+      }).select().single();
 
       if (insertResponse.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(insertResponse.error!.message)),
+          SnackBar(content: Text('Error al insertar datos: ${insertResponse.error!.message}')),
         );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registro exitoso')),
-        );
-        Navigator.pop(context); // Regresar a la pantalla de login
+        return;
       }
+
+      // Registro exitoso
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registro exitoso')),
+      );
+
+      Navigator.pop(context); // Regresar a la pantalla de login
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
@@ -103,7 +113,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register Page'),
+        title: const Text('Registro'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
