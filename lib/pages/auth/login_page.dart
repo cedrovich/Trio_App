@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../reservas_page.dart'; // Importa la nueva página de Reservas
+import '../principal_page.dart'; // Importa PrincipalPage
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_application_trio/pages/auth/register_page.dart'; // Registro (si lo tienes implementado)
+import 'register_page.dart'; // Importa RegisterPage
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,14 +17,15 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     try {
       final response = await Supabase.instance.client.auth.signInWithPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
+
       if (response.user != null) {
-        // Navegar a la nueva página de Reservas
+        // Navegar a la página principal después del inicio de sesión exitoso
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const ReservasPage()),
+          MaterialPageRoute(builder: (context) => const PrincipalPage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -54,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: const InputDecoration(
                 labelText: 'Correo electrónico',
               ),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 10),
             TextField(
@@ -71,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 10),
             TextButton(
               onPressed: () {
-                // Navegar a la página de registro (si lo tienes implementado)
+                // Navegar a la página de registro
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const RegisterPage()),

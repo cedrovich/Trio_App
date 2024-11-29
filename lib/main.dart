@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pages/home_page.dart'; // Importa HomePage
+import 'pages/principal_page.dart'; // Importa PrincipalPage
+import 'pages/reservas_page.dart'; // Importa ReservasPage
 
 const supabaseUrl = 'https://pggtliopkuymentnklow.supabase.co'; // URL de tu proyecto en Supabase
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnZ3RsaW9wa3V5bWVudG5rbG93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2MzE4OTcsImV4cCI6MjA0ODIwNzg5N30.HO87zVfpPOwBh0Cj0YVp2LowCHM750W49tbSmNkzfYQ'; // Reemplaza con tu clave pública (anonKey)
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnZ3RsaW9wa3V5bWVudG5rbG93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2MzE4OTcsImV4cCI6MjA0ODIwNzg5N30.HO87zVfpPOwBh0Cj0YVp2LowCHM750W49tbSmNkzfYQ'; // Clave pública (anonKey)
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Asegura que Flutter esté inicializado
