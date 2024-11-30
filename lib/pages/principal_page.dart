@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart'; // Importa CarouselSlider
 import 'reservas_page.dart'; // Importa la página de reservas
 import 'package:supabase_flutter/supabase_flutter.dart'; // Para cerrar sesión
 
@@ -15,6 +16,14 @@ class PrincipalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Lista de eventos (por ahora solo texto)
+    final List<String> eventos = [
+      'Concierto en CDMX - 5 de diciembre',
+      'Festival de música clásica - 15 de diciembre',
+      'Boda privada en Monterrey - 20 de diciembre',
+      'Evento corporativo en Guadalajara - 30 de diciembre',
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trío Semblanzas'),
@@ -35,7 +44,6 @@ class PrincipalPage extends StatelessWidget {
               leading: const Icon(Icons.person),
               title: const Text('Perfil'),
               onTap: () {
-                // Acción para la opción Perfil
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Sección de Perfil próximamente')),
@@ -46,7 +54,6 @@ class PrincipalPage extends StatelessWidget {
               leading: const Icon(Icons.settings),
               title: const Text('Ajustes'),
               onTap: () {
-                // Acción para la opción Ajustes
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Sección de Ajustes próximamente')),
@@ -57,7 +64,6 @@ class PrincipalPage extends StatelessWidget {
               leading: const Icon(Icons.question_answer),
               title: const Text('Preguntas frecuentes'),
               onTap: () {
-                // Acción para la opción Preguntas frecuentes
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Sección de Preguntas frecuentes próximamente')),
@@ -68,7 +74,6 @@ class PrincipalPage extends StatelessWidget {
               leading: const Icon(Icons.book),
               title: const Text('Reservar'),
               onTap: () {
-                // Redirige a la página de reservas
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ReservasPage()),
@@ -78,7 +83,7 @@ class PrincipalPage extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Cerrar sesión'),
-              onTap: () => _logout(context), // Llama al método para cerrar sesión
+              onTap: () => _logout(context),
             ),
           ],
         ),
@@ -103,8 +108,40 @@ class PrincipalPage extends StatelessWidget {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            const Text('- Concierto en CDMX - 5 de diciembre'),
-            const Text('- Festival de música clásica - 15 de diciembre'),
+            // CarouselSlider para los próximos eventos
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 200,
+                enlargeCenterPage: true,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 3),
+                aspectRatio: 16 / 9,
+                viewportFraction: 0.8,
+              ),
+              items: eventos.map((evento) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Card(
+                      elevation: 5,
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(
+                            evento,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center, 
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
