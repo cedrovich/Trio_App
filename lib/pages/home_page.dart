@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'auth/login_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -32,6 +33,34 @@ class _HomePageState extends State<HomePage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final seenOnboarding = prefs.getBool('seenOnboarding') ?? false;
+
+    if (seenOnboarding) {
+      // Si ya se vio el onboarding, navegar directamente al login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+  }
+
+  Future<void> _markOnboardingComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('seenOnboarding', true);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -56,7 +85,6 @@ class _HomePageState extends State<HomePage> {
                 },
                 itemCount: _onboardingData.length,
                 itemBuilder: (context, index) {
-                  // Asegurarse de que los valores no sean nulos
                   final title = _onboardingData[index]['title'] ?? '';
                   final description = _onboardingData[index]['description'] ?? '';
                   final iconName = _onboardingData[index]['icon'] ?? 'error';
@@ -119,12 +147,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               child: ElevatedButton(
                 onPressed: _currentPage == _onboardingData.length - 1
-                    ? () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginPage()),
-                        );
-                      }
+                    ? _markOnboardingComplete
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF892E2E),
@@ -152,7 +175,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   IconData _getIconData(String iconName) {
-    // Mapea los nombres de iconos a los correspondientes en Icons
     switch (iconName) {
       case 'music_note':
         return Icons.music_note;
@@ -161,7 +183,6 @@ class _HomePageState extends State<HomePage> {
       case 'verified':
         return Icons.verified;
       default:
-        // Si no se encuentra el icono, utiliza un icono genérico
         return Icons.error;
     }
   }

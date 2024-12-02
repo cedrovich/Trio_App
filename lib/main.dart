@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pages/home_page.dart'; // Importa HomePage
+// ignore: unused_import
 import 'pages/principal_page.dart'; // Importa PrincipalPage
+// ignore: unused_import
 import 'pages/reservas_page.dart'; // Importa ReservasPage
 
 const supabaseUrl = 'https://pggtliopkuymentnklow.supabase.co'; // URL de tu proyecto en Supabase

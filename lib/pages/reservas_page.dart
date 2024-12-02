@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'agendar_evento.dart';
-import 'principal_page.dart'; // Importa la pantalla PrincipalPage
+import 'principal_page.dart';
 
 class ReservasPage extends StatefulWidget {
   const ReservasPage({super.key});
@@ -41,7 +41,7 @@ class _ReservasPageState extends State<ReservasPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al cargar reservas: $e'),
-          backgroundColor: Color(0xFF892E2E),
+          backgroundColor: const Color(0xFF892E2E),
         ),
       );
       setState(() {
@@ -70,14 +70,14 @@ class _ReservasPageState extends State<ReservasPage> {
             ),
           ),
           centerTitle: true,
-          automaticallyImplyLeading: false, // Oculta la flecha de retroceso
-          backgroundColor: Color(0xFF892E2E),
+          automaticallyImplyLeading: false,
+          backgroundColor: const Color(0xFF892E2E),
           elevation: 0,
         ),
         body: _isLoading
             ? Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF892E2E)),
+                  valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF892E2E)),
                 ),
               )
             : SingleChildScrollView(
@@ -86,12 +86,12 @@ class _ReservasPageState extends State<ReservasPage> {
                     if (_reservas.isEmpty)
                       Center(
                         child: Padding(
-                          padding: EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.all(20.0),
                           child: Text(
                             'No tienes reservas registradas.',
                             style: GoogleFonts.roboto(
                               fontSize: 16,
-                              color: Color(0xFF892E2E),
+                              color: const Color(0xFF892E2E),
                             ),
                           ),
                         ),
@@ -110,19 +110,19 @@ class _ReservasPageState extends State<ReservasPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
-                              contentPadding: EdgeInsets.all(16),
+                              contentPadding: const EdgeInsets.all(16),
                               title: Text(
                                 reserva['tipo_evento'] ?? 'Evento',
                                 style: GoogleFonts.roboto(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
-                                  color: Color(0xFF892E2E),
+                                  color: const Color(0xFF892E2E),
                                 ),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   _buildInfoRow(Icons.calendar_today, 'Fecha: ${reserva['fecha']}'),
                                   _buildInfoRow(Icons.access_time, 'Hora: ${reserva['hora']}'),
                                   if (reserva['tipo_evento'] == 'Serenata')
@@ -134,40 +134,37 @@ class _ReservasPageState extends State<ReservasPage> {
                                   _buildInfoRow(Icons.attach_money, 'Precio: \$${reserva['monto'] ?? '0'}'),
                                 ],
                               ),
-                              trailing: Icon(Icons.event, color: Color(0xFF892E2E)),
+                              trailing: const Icon(Icons.event, color: Color(0xFF892E2E)),
                             ),
                           );
                         },
                       ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const AgendarEventoPage()),
-                          );
-                        },
-                        icon: Icon(Icons.add, color: Colors.white),
-                        label: Text(
-                          'Agendar un evento',
-                          style: GoogleFonts.roboto(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF892E2E),
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
+        floatingActionButton: SizedBox(
+          width: 90, // Ancho del botón flotante
+          height: 40, // Alto del botón flotante
+          child: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AgendarEventoPage()),
+              );
+            },
+            backgroundColor: const Color(0xFF892E2E),
+            icon: const Icon(Icons.add, color: Colors.white, size: 15), // Tamaño del ícono
+            label: Text(
+              'Agendar',
+              style: GoogleFonts.roboto(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12, // Tamaño del texto
+              ),
+            ),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat, // Posición del botón flotante
       ),
     );
   }
@@ -178,7 +175,7 @@ class _ReservasPageState extends State<ReservasPage> {
       child: Row(
         children: [
           Icon(icon, size: 16, color: Colors.grey[600]),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             text,
             style: GoogleFonts.roboto(

@@ -188,6 +188,7 @@ class _AgendarEventoPageState extends State<AgendarEventoPage> {
             : null,
       };
 
+      // ignore: unused_local_variable
       final insertResponse = await Supabase.instance.client
           .from('eventos')
           .insert(reserva)
