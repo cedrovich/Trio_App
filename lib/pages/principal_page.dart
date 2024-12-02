@@ -33,7 +33,13 @@ class _PrincipalPageState extends State<PrincipalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trío Semblanzas'),
+        title: Padding(
+    padding: const EdgeInsets.only(left: 55.0), // Ajusta este valor según sea necesario
+    child: Image.asset(
+      'lib/assets/images/logo_trio.png',
+      height: 60, // Ajusta la altura de la imagen
+    ),
+  ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -89,9 +95,10 @@ class HomeContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Bienvenido al Trío Semblanzas',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          Image.asset(
+            'lib/assets/images/logo_trio.png', // Ruta de tu imagen
+            height: 80, // Ajusta la altura según sea necesario
+            fit: BoxFit.contain, // Ajusta cómo se muestra la imagen
           ),
           const SizedBox(height: 10),
           const Text(
@@ -140,15 +147,15 @@ class HomeContent extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Center(
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ReservasPage()),
-                );
-              },
-              child: const Text('¡Contrátanos ya!'),
-            ),
+            // child: ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => const ReservasPage()),
+            //     );
+            //   },
+            //   child: const Text('¡Contrátanos ya!'),
+            // ),
           ),
         ],
       ),
