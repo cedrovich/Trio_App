@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'agendar_evento.dart'; // Importa la página para agendar eventos
+import 'package:google_fonts/google_fonts.dart';
+import 'agendar_evento.dart';
+import 'principal_page.dart'; // Importa la pantalla PrincipalPage
 
 class ReservasPage extends StatefulWidget {
   const ReservasPage({super.key});
@@ -27,7 +29,7 @@ class _ReservasPageState extends State<ReservasPage> {
       }
 
       final response = await Supabase.instance.client
-          .from('eventos') // Nombre de tu tabla
+          .from('eventos')
           .select()
           .eq('correo', correo);
 
@@ -37,7 +39,10 @@ class _ReservasPageState extends State<ReservasPage> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar reservas: $e')),
+        SnackBar(
+          content: Text('Error al cargar reservas: $e'),
+          backgroundColor: Color(0xFF892E2E),
+        ),
       );
       setState(() {
         _isLoading = false;
@@ -48,23 +53,47 @@ class _ReservasPageState extends State<ReservasPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // Bloquear el botón físico de retroceso
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PrincipalPage()),
+        );
+        return false;
+      },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Mis Reservas'),
+          title: Text(
+            'Mis Reservas',
+            style: GoogleFonts.roboto(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           centerTitle: true,
-          automaticallyImplyLeading: false, // Elimina la flecha de retroceso
+          automaticallyImplyLeading: false, // Oculta la flecha de retroceso
+          backgroundColor: Color(0xFF892E2E),
+          elevation: 0,
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF892E2E)),
+                ),
+              )
             : SingleChildScrollView(
                 child: Column(
                   children: [
                     if (_reservas.isEmpty)
-                      const Center(
+                      Center(
                         child: Padding(
                           padding: EdgeInsets.all(20.0),
-                          child: Text('No tienes reservas registradas.'),
+                          child: Text(
+                            'No tienes reservas registradas.',
+                            style: GoogleFonts.roboto(
+                              fontSize: 16,
+                              color: Color(0xFF892E2E),
+                            ),
+                          ),
                         ),
                       )
                     else
@@ -75,33 +104,43 @@ class _ReservasPageState extends State<ReservasPage> {
                         itemBuilder: (context, index) {
                           final reserva = _reservas[index];
                           return Card(
-                            margin: const EdgeInsets.all(10),
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: ListTile(
+                              contentPadding: EdgeInsets.all(16),
                               title: Text(
                                 reserva['tipo_evento'] ?? 'Evento',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: GoogleFonts.roboto(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Color(0xFF892E2E),
+                                ),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Fecha: ${reserva['fecha']}'),
-                                  Text('Hora: ${reserva['hora']}'),
+                                  SizedBox(height: 8),
+                                  _buildInfoRow(Icons.calendar_today, 'Fecha: ${reserva['fecha']}'),
+                                  _buildInfoRow(Icons.access_time, 'Hora: ${reserva['hora']}'),
                                   if (reserva['tipo_evento'] == 'Serenata')
-                                    Text('Canciones: ${reserva['canciones'] ?? 'N/A'}'),
+                                    _buildInfoRow(Icons.music_note, 'Canciones: ${reserva['canciones'] ?? 'N/A'}'),
                                   if (reserva['tipo_evento'] == 'Evento') ...[
-                                    Text('Horas: ${reserva['horas'] ?? 'N/A'}'),
-                                    Text('Sonido: ${reserva['sonido'] ?? 'N/A'}'),
+                                    _buildInfoRow(Icons.timer, 'Horas: ${reserva['horas'] ?? 'N/A'}'),
+                                    _buildInfoRow(Icons.speaker, 'Sonido: ${reserva['sonido'] ?? 'N/A'}'),
                                   ],
-                                  Text('Precio: \$${reserva['monto'] ?? '0'}'),
+                                  _buildInfoRow(Icons.attach_money, 'Precio: \$${reserva['monto'] ?? '0'}'),
                                 ],
                               ),
-                              trailing: const Icon(Icons.event),
+                              trailing: Icon(Icons.event, color: Color(0xFF892E2E)),
                             ),
                           );
                         },
                       ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
                       child: ElevatedButton.icon(
                         onPressed: () {
                           Navigator.push(
@@ -109,8 +148,21 @@ class _ReservasPageState extends State<ReservasPage> {
                             MaterialPageRoute(builder: (context) => const AgendarEventoPage()),
                           );
                         },
-                        icon: const Icon(Icons.add),
-                        label: const Text('Agendar un evento'),
+                        icon: Icon(Icons.add, color: Colors.white),
+                        label: Text(
+                          'Agendar un evento',
+                          style: GoogleFonts.roboto(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF892E2E),
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -119,8 +171,23 @@ class _ReservasPageState extends State<ReservasPage> {
       ),
     );
   }
-}
 
-extension on PostgrestList {
-  get error => null;
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: Colors.grey[600]),
+          SizedBox(width: 8),
+          Text(
+            text,
+            style: GoogleFonts.roboto(
+              fontSize: 14,
+              color: Colors.grey[800],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

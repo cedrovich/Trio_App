@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../principal_page.dart'; // Importa PrincipalPage
+import '../principal_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'register_page.dart'; // Importa RegisterPage
+import 'register_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,19 +23,24 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.user != null) {
-        // Navegar a la página principal después del inicio de sesión exitoso
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const PrincipalPage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al iniciar sesión')),
+          SnackBar(
+            content: Text('Error al iniciar sesión', style: TextStyle(color: Colors.white)),
+            backgroundColor: Color(0xFF892E2E),
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(
+          content: Text('Error: $e', style: TextStyle(color: Colors.white)),
+          backgroundColor: Color(0xFF892E2E),
+        ),
       );
     }
   }
@@ -42,46 +48,115 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Iniciar Sesión'),
+        title: Text(
+          'Iniciar Sesión',
+          style: GoogleFonts.roboto(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(0xFF892E2E),
+        elevation: 0,
+        automaticallyImplyLeading: false, // Oculta la flecha de retroceso
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Correo electrónico',
-              ),
-              keyboardType: TextInputType.emailAddress,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 40),
+                Center(
+                  child: Image.asset(
+                    'lib/assets/images/logo_trio.png', // Ruta al logo
+                    width: 190, // Ancho de la imagen
+                    height: 100, // Altura de la imagen
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(height: 40),
+                Text(
+                  'Bienvenido de vuelta',
+                  style: GoogleFonts.roboto(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF892E2E),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 40),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Correo electrónico',
+                    labelStyle: TextStyle(color: Color(0xFF892E2E)),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF892E2E), width: 2.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    prefixIcon: Icon(Icons.email, color: Color(0xFF892E2E)),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    labelStyle: TextStyle(color: Color(0xFF892E2E)),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF892E2E), width: 2.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    prefixIcon: Icon(Icons.lock, color: Color(0xFF892E2E)),
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF892E2E),
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'Iniciar Sesión',
+                    style: GoogleFonts.roboto(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RegisterPage()),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Color(0xFF892E2E),
+                  ),
+                  child: Text(
+                    '¿No tienes cuenta? Regístrate aquí',
+                    style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Contraseña',
-              ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _login,
-              child: const Text('Iniciar Sesión'),
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-                // Navegar a la página de registro
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RegisterPage()),
-                );
-              },
-              child: const Text('¿No tienes cuenta? Regístrate aquí'),
-            ),
-          ],
+          ),
         ),
       ),
     );

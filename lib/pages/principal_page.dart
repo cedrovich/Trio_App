@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'reservas_page.dart'; // Importa la página de reservas
-import 'perfil_page.dart'; // Crea esta página si aún no existe
-import 'promo_page.dart'; // Importa la página de promociones
-import 'package:supabase_flutter/supabase_flutter.dart'; // Para cerrar sesión
+import 'reservas_page.dart';
+import 'perfil_page.dart';
+import 'promo_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PrincipalPage extends StatefulWidget {
   const PrincipalPage({super.key});
@@ -19,51 +20,68 @@ class _PrincipalPageState extends State<PrincipalPage> {
     await Supabase.instance.client.auth.signOut();
     Navigator.pushReplacementNamed(context, '/login');
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Sesión cerrada')),
+      SnackBar(
+        content: Text('Sesión cerrada', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color(0xFF892E2E),
+      ),
     );
   }
 
-  // Lista de páginas principales
   final List<Widget> _paginas = [
-    HomeContent(), // Contenido de inicio (Home)
-    ReservasPage(), // Página de reservas
-    PromoPage(),    // Página de promociones
-    PerfilPage(),   // Página de perfil
+    HomeContent(),
+    ReservasPage(),
+    PromoPage(),
+    PerfilPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF892E2E),
+        elevation: 0,
         title: Padding(
-          padding: const EdgeInsets.only(left: 55.0), // Ajusta este valor según sea necesario
+          padding: const EdgeInsets.only(left: 145.0),
           child: Image.asset(
             'lib/assets/images/logo_trio.png',
-            height: 60, // Ajusta la altura de la imagen
+            height: 40,
+            color: Colors.white,
           ),
         ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Opciones',
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Cerrar sesión'),
-              onTap: () => _logout(context),
-            ),
-          ],
-        ),
-      ),
-      body: _paginas[_paginaActual], // Cambia el contenido según la página actual
+      // drawer: Drawer(
+      //   child: ListView(
+      //     children: [
+      //       DrawerHeader(
+      //         decoration: BoxDecoration(
+      //           color: Color(0xFF892E2E),
+      //         ),
+      //         child: Column(
+      //           crossAxisAlignment: CrossAxisAlignment.start,
+      //           children: [
+      //             CircleAvatar(
+      //               radius: 40,
+      //               backgroundColor: Colors.white,
+      //               child: Icon(Icons.music_note, size: 40, color: Color(0xFF892E2E)),
+      //             ),
+      //             SizedBox(height: 10),
+      //             Text(
+      //               'Menú',
+      //               style: GoogleFonts.roboto(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //       ListTile(
+      //         leading: Icon(Icons.logout, color: Color(0xFF892E2E)),
+      //         title: Text('Cerrar sesión', style: GoogleFonts.roboto(color: Color(0xFF892E2E))),
+      //         onTap: () => _logout(context),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      body: _paginas[_paginaActual],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _paginaActual,
         onTap: (index) {
@@ -71,12 +89,14 @@ class _PrincipalPageState extends State<PrincipalPage> {
             _paginaActual = index;
           });
         },
-        selectedItemColor: const Color(0xFF892E2E), // Color para los íconos seleccionados
-        unselectedItemColor: Colors.grey, // Color para los íconos no seleccionados
+        selectedItemColor: Color(0xFF892E2E),
+        unselectedItemColor: Colors.grey,
+        backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
           BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Reservas'),
-          BottomNavigationBarItem(icon: Icon(Icons.local_offer), label: 'Promociones'),  // Nuevo ítem para promociones
+          BottomNavigationBarItem(icon: Icon(Icons.local_offer), label: 'Promociones'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
@@ -84,7 +104,6 @@ class _PrincipalPageState extends State<PrincipalPage> {
   }
 }
 
-// Widget para la página principal (contenido de inicio)
 class HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -100,23 +119,54 @@ class HomeContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(
-            'lib/assets/images/logo_trio.png', // Ruta de tu imagen
-            height: 80, // Ajusta la altura según sea necesario
-            fit: BoxFit.contain, // Ajusta cómo se muestra la imagen
+          // Contenedor con imagen, texto y degradado
+          Stack(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  image: DecorationImage(
+                    image: AssetImage('lib/assets/images/trio.jpg'), // Asegúrate de que la imagen exista en esta ruta
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  gradient: LinearGradient(
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child: Text(
+                  'Disfruta de la mejor música en vivo para tus eventos.',
+                  style: GoogleFonts.roboto(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          const Text(
-            'Disfruta de la mejor música en vivo para tus eventos.',
-            style: TextStyle(fontSize: 18),
+          const SizedBox(height: 30),
+          Text(
+            'Próximos Eventos:',
+            style: GoogleFonts.roboto(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF892E2E)),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Próximos Eventos:',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          // CarouselSlider para los próximos eventos
           CarouselSlider(
             options: CarouselOptions(
               height: 200,
@@ -131,15 +181,17 @@ class HomeContent extends StatelessWidget {
                 builder: (BuildContext context) {
                   return Card(
                     elevation: 5,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    color: Color(0xFF892E2E),
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Text(
                           evento,
-                          style: const TextStyle(
+                          style: GoogleFonts.roboto(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -150,18 +202,7 @@ class HomeContent extends StatelessWidget {
               );
             }).toList(),
           ),
-          const SizedBox(height: 20),
-          Center(
-            // child: ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) => const ReservasPage()),
-            //     );
-            //   },
-            //   child: const Text('¡Contrátanos ya!'),
-            // ),
-          ),
+          const SizedBox(height: 30),
         ],
       ),
     );

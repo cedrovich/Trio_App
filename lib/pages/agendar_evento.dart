@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AgendarEventoPage extends StatefulWidget {
   const AgendarEventoPage({super.key});
@@ -30,10 +31,20 @@ class _AgendarEventoPageState extends State<AgendarEventoPage> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2026),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Color(0xFF892E2E),
+            colorScheme: ColorScheme.light(primary: Color(0xFF892E2E)),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
-        _fechaController.text = "${picked.year}-${picked.month}-${picked.day}";
+        _fechaController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
       });
     }
   }
@@ -42,10 +53,20 @@ class _AgendarEventoPageState extends State<AgendarEventoPage> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Color(0xFF892E2E),
+            colorScheme: ColorScheme.light(primary: Color(0xFF892E2E)),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
-        _horaController.text = "${picked.hour}:${picked.minute}";
+        _horaController.text = "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
       });
     }
   }
@@ -173,7 +194,10 @@ class _AgendarEventoPageState extends State<AgendarEventoPage> {
           .select();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Reserva guardada exitosamente.')),
+        SnackBar(
+          content: Text('Reserva guardada exitosamente.', style: TextStyle(color: Colors.white)),
+          backgroundColor: Color(0xFF892E2E),
+        ),
       );
 
       setState(() {
@@ -190,7 +214,10 @@ class _AgendarEventoPageState extends State<AgendarEventoPage> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar la reserva: $e')),
+        SnackBar(
+          content: Text('Error al guardar la reserva: $e', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -199,214 +226,330 @@ class _AgendarEventoPageState extends State<AgendarEventoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agendar Evento'),
+        title: Text(
+          'Agendar Evento',
+          style: GoogleFonts.roboto(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(0xFF892E2E),
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Tipo de Evento',
-                  border: OutlineInputBorder(),
-                ),
-                value: selectedTipoEvento,
-                items: tiposEvento.map((String tipo) {
-                  return DropdownMenuItem<String>(
-                    value: tipo,
-                    child: Text(tipo),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedTipoEvento = newValue;
-                    _precioTotal = 0.0;
-                    _cancionesController.clear();
-                    _horasController.clear();
-                    selectedSonido = null;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Por favor seleccione un tipo de evento';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              if (selectedTipoEvento == 'Serenata') ...[
-                TextFormField(
-                  controller: _cancionesController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Número de Canciones (Mínimo 5)',
-                    border: OutlineInputBorder(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF892E2E), Colors.white],
+            stops: [0.0, 0.3],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Detalles del Evento',
+                          style: GoogleFonts.roboto(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF892E2E),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        _buildDropdownField(
+                          label: 'Tipo de Evento',
+                          value: selectedTipoEvento,
+                          items: tiposEvento,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedTipoEvento = newValue;
+                              _precioTotal = 0.0;
+                              _cancionesController.clear();
+                              _horasController.clear();
+                              selectedSonido = null;
+                            });
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        if (selectedTipoEvento == 'Serenata')
+                          _buildTextField(
+                            controller: _cancionesController,
+                            label: 'Número de Canciones (Mínimo 5)',
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              final intValue = int.tryParse(value);
+                              if (intValue != null) {
+                                _calcularPrecioSerenata(intValue);
+                                setState(() {});
+                              }
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor ingrese la cantidad de canciones';
+                              }
+                              final intValue = int.tryParse(value);
+                              if (intValue == null || intValue < 5) {
+                                return 'Debe ingresar al menos 5 canciones';
+                              }
+                              return null;
+                            },
+                          )
+                        else if (selectedTipoEvento == 'Evento')
+                          Column(
+                            children: [
+                              _buildTextField(
+                                controller: _horasController,
+                                label: 'Número de Horas (Mínimo 1)',
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  final intValue = int.tryParse(value);
+                                  if (intValue != null && selectedSonido != null) {
+                                    _calcularPrecioEvento(intValue, selectedSonido);
+                                    setState(() {});
+                                  }
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Por favor ingrese la cantidad de horas';
+                                  }
+                                  final intValue = int.tryParse(value);
+                                  if (intValue == null || intValue < 1) {
+                                    return 'Debe ingresar al menos 1 hora';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 16),
+                              _buildDropdownField(
+                                label: '¿Con sonido?',
+                                value: selectedSonido,
+                                items: ['Con Sonido', 'Sin Sonido'],
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedSonido = newValue;
+                                    final intValue = int.tryParse(_horasController.text);
+                                    if (intValue != null) {
+                                      _calcularPrecioEvento(intValue, selectedSonido);
+                                    }
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        SizedBox(height: 16),
+                        _buildDateField(
+                          controller: _fechaController,
+                          label: 'Fecha del Evento',
+                          onTap: () => _selectDate(context),
+                        ),
+                        SizedBox(height: 16),
+                        _buildTimeField(
+                          controller: _horaController,
+                          label: 'Hora del Evento',
+                          onTap: () => _selectTime(context),
+                        ),
+                        SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _contactoController,
+                          label: 'Número de Contacto',
+                          keyboardType: TextInputType.phone,
+                        ),
+                        SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _detallesAdicionalesController,
+                          label: 'Detalles Adicionales',
+                          maxLines: 3,
+                        ),
+                      ],
+                    ),
                   ),
-                  onChanged: (value) {
-                    final intValue = int.tryParse(value);
-                    if (intValue != null) {
-                      _calcularPrecioSerenata(intValue);
-                      setState(() {});
-                    }
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingrese la cantidad de canciones';
-                    }
-                    final intValue = int.tryParse(value);
-                    if (intValue == null || intValue < 5) {
-                      return 'Debe ingresar al menos 5 canciones';
-                    }
-                    return null;
-                  },
                 ),
-              ] else if (selectedTipoEvento == 'Evento') ...[
-                TextFormField(
-                  controller: _horasController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Número de Horas (Mínimo 1)',
-                    border: OutlineInputBorder(),
+                SizedBox(height: 24),
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Resumen',
+                          style: GoogleFonts.roboto(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF892E2E),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Precio Total: \$${_precioTotal.toStringAsFixed(2)}',
+                          style: GoogleFonts.roboto(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF892E2E),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  onChanged: (value) {
-                    final intValue = int.tryParse(value);
-                    if (intValue != null && selectedSonido != null) {
-                      _calcularPrecioEvento(intValue, selectedSonido);
-                      setState(() {});
-                    }
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingrese la cantidad de horas';
-                    }
-                    final intValue = int.tryParse(value);
-                    if (intValue == null || intValue < 1) {
-                      return 'Debe ingresar al menos 1 hora';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: '¿Con sonido?',
-                    border: OutlineInputBorder(),
+                SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _guardarReserva,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF892E2E),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                  value: selectedSonido,
-                  items: ['Con Sonido', 'Sin Sonido'].map((String tipo) {
-                    return DropdownMenuItem<String>(
-                      value: tipo,
-                      child: Text(tipo),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedSonido = newValue;
-                      final intValue = int.tryParse(_horasController.text);
-                      if (intValue != null) {
-                        _calcularPrecioEvento(intValue, selectedSonido);
-                        setState(() {});
-                      }
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Por favor seleccione una opción';
-                    }
-                    return null;
-                  },
+                  child: Text(
+                    'Confirmar Reserva',
+                    style: GoogleFonts.roboto(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ],
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _fechaController,
-                decoration: InputDecoration(
-                  labelText: 'Fecha del Evento',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context),
-                  ),
-                ),
-                readOnly: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor seleccione una fecha';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _horaController,
-                decoration: InputDecoration(
-                  labelText: 'Hora del Evento',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.access_time),
-                    onPressed: () => _selectTime(context),
-                  ),
-                ),
-                readOnly: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor seleccione una hora';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _contactoController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Número de Contacto',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese un número de contacto';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _detallesAdicionalesController,
-                decoration: const InputDecoration(
-                  labelText: 'Detalles Adicionales',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              Text(
-                'Precio Total: \$${_precioTotal.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 24),
-
-              ElevatedButton(
-                onPressed: _guardarReserva,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'Confirmar Reserva',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required void Function(String?) onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Color(0xFF892E2E)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Color(0xFF892E2E), width: 2),
+        ),
+      ),
+      value: value,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor seleccione una opción';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType? keyboardType,
+    void Function(String)? onChanged,
+    String? Function(String?)? validator,
+    int? maxLines,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Color(0xFF892E2E)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Color(0xFF892E2E), width: 2),
+        ),
+      ),
+      onChanged: onChanged,
+      validator: validator,
+    );
+  }
+
+  Widget _buildDateField({
+    required TextEditingController controller,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Color(0xFF892E2E)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Color(0xFF892E2E), width: 2),
+        ),
+        suffixIcon: Icon(Icons.calendar_today, color: Color(0xFF892E2E)),
+      ),
+      readOnly: true,
+      onTap: onTap,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor seleccione una fecha';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildTimeField({
+    required TextEditingController controller,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Color(0xFF892E2E)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Color(0xFF892E2E), width: 2),
+        ),
+        suffixIcon: Icon(Icons.access_time, color: Color(0xFF892E2E)),
+      ),
+      readOnly: true,
+      onTap: onTap,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor seleccione una hora';
+        }
+        return null;
+      },
     );
   }
 
@@ -421,3 +564,4 @@ class _AgendarEventoPageState extends State<AgendarEventoPage> {
     super.dispose();
   }
 }
+
