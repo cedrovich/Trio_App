@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'reservas_page.dart'; // Importa la página de reservas
 import 'perfil_page.dart'; // Crea esta página si aún no existe
+import 'promo_page.dart'; // Importa la página de promociones
 import 'package:supabase_flutter/supabase_flutter.dart'; // Para cerrar sesión
 
 class PrincipalPage extends StatefulWidget {
@@ -26,7 +27,8 @@ class _PrincipalPageState extends State<PrincipalPage> {
   final List<Widget> _paginas = [
     HomeContent(), // Contenido de inicio (Home)
     ReservasPage(), // Página de reservas
-    PerfilPage(), // Página de perfil
+    PromoPage(),    // Página de promociones
+    PerfilPage(),   // Página de perfil
   ];
 
   @override
@@ -34,12 +36,12 @@ class _PrincipalPageState extends State<PrincipalPage> {
     return Scaffold(
       appBar: AppBar(
         title: Padding(
-    padding: const EdgeInsets.only(left: 55.0), // Ajusta este valor según sea necesario
-    child: Image.asset(
-      'lib/assets/images/logo_trio.png',
-      height: 60, // Ajusta la altura de la imagen
-    ),
-  ),
+          padding: const EdgeInsets.only(left: 55.0), // Ajusta este valor según sea necesario
+          child: Image.asset(
+            'lib/assets/images/logo_trio.png',
+            height: 60, // Ajusta la altura de la imagen
+          ),
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -69,9 +71,12 @@ class _PrincipalPageState extends State<PrincipalPage> {
             _paginaActual = index;
           });
         },
+        selectedItemColor: const Color(0xFF892E2E), // Color para los íconos seleccionados
+        unselectedItemColor: Colors.grey, // Color para los íconos no seleccionados
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
           BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Reservas'),
+          BottomNavigationBarItem(icon: Icon(Icons.local_offer), label: 'Promociones'),  // Nuevo ítem para promociones
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
