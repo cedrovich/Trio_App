@@ -50,37 +50,6 @@ class _PrincipalPageState extends State<PrincipalPage> {
         ),
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      // drawer: Drawer(
-      //   child: ListView(
-      //     children: [
-      //       DrawerHeader(
-      //         decoration: BoxDecoration(
-      //           color: Color(0xFF892E2E),
-      //         ),
-      //         child: Column(
-      //           crossAxisAlignment: CrossAxisAlignment.start,
-      //           children: [
-      //             CircleAvatar(
-      //               radius: 40,
-      //               backgroundColor: Colors.white,
-      //               child: Icon(Icons.music_note, size: 40, color: Color(0xFF892E2E)),
-      //             ),
-      //             SizedBox(height: 10),
-      //             Text(
-      //               'Menú',
-      //               style: GoogleFonts.roboto(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       ListTile(
-      //         leading: Icon(Icons.logout, color: Color(0xFF892E2E)),
-      //         title: Text('Cerrar sesión', style: GoogleFonts.roboto(color: Color(0xFF892E2E))),
-      //         onTap: () => _logout(context),
-      //       ),
-      //     ],
-      //   ),
-      // ),
       body: _paginas[_paginaActual],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _paginaActual,
@@ -105,15 +74,27 @@ class _PrincipalPageState extends State<PrincipalPage> {
 }
 
 class HomeContent extends StatelessWidget {
+  final List<Map<String, String>> eventos = [
+    {
+      'title': 'Noche Regional Martes 10 de Octubre',
+      'image': 'lib/assets/images/event1.jpg',
+    },
+    {
+      'title': 'Noche Regional Martes 01 de Agosto',
+      'image': 'lib/assets/images/event2.jpg',
+    },
+    {
+      'title': 'Feria Tunich del 26 del Julio al 04 de Agosto',
+      'image': 'lib/assets/images/event3.jpg',
+    },
+    {
+      'title': 'Visit Merida del 30 de Julio al 01 de Agosto',
+      'image': 'lib/assets/images/event4.jpg',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final List<String> eventos = [
-      'Concierto en CDMX - 5 de diciembre',
-      'Festival de música clásica - 15 de diciembre',
-      'Boda privada en Monterrey - 20 de diciembre',
-      'Evento corporativo en Guadalajara - 30 de diciembre',
-    ];
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -128,7 +109,7 @@ class HomeContent extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   image: DecorationImage(
-                    image: AssetImage('lib/assets/images/trio.jpg'), // Asegúrate de que la imagen exista en esta ruta
+                    image: AssetImage('lib/assets/images/trio.jpg'), // Imagen de encabezado
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -169,7 +150,7 @@ class HomeContent extends StatelessWidget {
           const SizedBox(height: 20),
           CarouselSlider(
             options: CarouselOptions(
-              height: 200,
+              height: 250,
               enlargeCenterPage: true,
               autoPlay: true,
               autoPlayInterval: const Duration(seconds: 3),
@@ -179,15 +160,37 @@ class HomeContent extends StatelessWidget {
             items: eventos.map((evento) {
               return Builder(
                 builder: (BuildContext context) {
-                  return Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    color: Color(0xFF892E2E),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
+                  return Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          image: DecorationImage(
+                            image: AssetImage(evento['image']!), // Imagen del evento
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          gradient: LinearGradient(
+                            colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 20,
+                        left: 20,
+                        right: 20,
                         child: Text(
-                          evento,
+                          evento['title']!,
                           style: GoogleFonts.roboto(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -196,7 +199,7 @@ class HomeContent extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
+                    ],
                   );
                 },
               );
