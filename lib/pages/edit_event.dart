@@ -25,39 +25,38 @@ class _EditEventPageState extends State<EditEventPage> {
     _timeController = TextEditingController(text: widget.eventData['hora']);
   }
 
-  Future<void> _updateEvent() async {
+Future<void> _updateEvent() async {
     setState(() => _isLoading = true);
 
     try {
       final newDate = _dateController.text;
       final newTime = _timeController.text;
 
+      // Validate that date and time are not empty
+      if (newDate.isEmpty || newTime.isEmpty) {
+        throw 'Por favor, selecciona la fecha y hora del evento.';
+      }
+
       // Validación de conflicto de horarios
       final response = await Supabase.instance.client
           .from('eventos')
           .select()
-          .neq('id', widget.eventData['id'])
-          .eq('fecha', newDate);
+          .eq('fecha', newDate)
+          .eq('hora', newTime)
+          .neq('id', widget.eventData['id']);
 
-      if (response == null || response.error != null) {
-        throw response?.error?.message ?? 'Error al obtener las reservas existentes.';
-      }
+      // Check if there are any existing reservations for the same date and time
+      final existingReservations = await response;
 
-      final existingReservations = List<Map<String, dynamic>>.from(response as List);
-
-      if (existingReservations.any((reservation) => reservation['hora'] == newTime)) {
-        throw 'Ya existe una reserva en la misma fecha y hora.';
+      if (existingReservations.isNotEmpty) {
+        throw 'Ya existe una reserva en la misma fecha y hora. Por favor, elige otro horario.';
       }
 
       // Actualización del evento
-      final updateResponse = await Supabase.instance.client
+      await Supabase.instance.client
           .from('eventos')
           .update({'fecha': newDate, 'hora': newTime})
           .eq('id', widget.eventData['id']);
-
-      if (updateResponse == null || updateResponse.error != null) {
-        throw updateResponse?.error?.message ?? 'Error al actualizar el evento.';
-      }
 
       _showSnackBar('Reserva actualizada con éxito.', _accentColor);
       Navigator.pop(context);
@@ -131,7 +130,7 @@ class _EditEventPageState extends State<EditEventPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Editar Evento',
+          'Reagendar Evento',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: _accentColor,

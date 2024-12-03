@@ -29,13 +29,13 @@ class _PerfilPageState extends State<PerfilPage> {
       if (user != null) {
         final response = await Supabase.instance.client
             .from('users')
-            .select()
+            .select('full_name, avatar_url, phone_number, birth_date')
             .eq('user_id', user.id)
             .single();
 
         setState(() {
           _user = user;
-          _profileData = response;
+          _profileData = response as Map<String, dynamic>;
           _isLoading = false;
         });
       } else {
@@ -112,10 +112,10 @@ class _PerfilPageState extends State<PerfilPage> {
                 CircleAvatar(
                   radius: 80,
                   backgroundColor: Color(0xFF892E2E).withOpacity(0.1),
-                  backgroundImage: _user?.userMetadata?['avatar_url'] != null
-                      ? NetworkImage(_user!.userMetadata!['avatar_url'])
+                  backgroundImage: _profileData?['avatar_url'] != null
+                      ? NetworkImage(_profileData!['avatar_url']) // URL de la imagen
                       : const AssetImage('assets/images/person.png') as ImageProvider,
-                  child: _user?.userMetadata?['avatar_url'] == null
+                  child: _profileData?['avatar_url'] == null
                       ? Icon(
                           Icons.person,
                           color: Color(0xFF892E2E),

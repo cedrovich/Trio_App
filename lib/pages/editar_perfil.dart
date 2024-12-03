@@ -8,9 +8,9 @@ class EditarPerfilPage extends StatefulWidget {
   final User user;
 
   const EditarPerfilPage({
-    super.key, 
-    required this.profileData, 
-    required this.user
+    super.key,
+    required this.profileData,
+    required this.user,
   });
 
   @override
@@ -27,15 +27,14 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
   @override
   void initState() {
     super.initState();
-    // Inicializar controladores con los datos actuales
     _nombreController = TextEditingController(
-      text: widget.profileData['full_name'] ?? ''
+      text: widget.profileData['full_name'] ?? '',
     );
     _telefonoController = TextEditingController(
-      text: widget.profileData['phone_number'] ?? ''
+      text: widget.profileData['phone_number'] ?? '',
     );
     _fechaNacimientoController = TextEditingController(
-      text: widget.profileData['birth_date'] ?? ''
+      text: widget.profileData['birth_date'] ?? '',
     );
   }
 
@@ -54,18 +53,16 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
     if (_profileImagePath == null) return null;
 
     try {
-      // Nombre de archivo único
       final fileName = '${widget.user.id}/profile_picture.png';
-      
-      // Subir imagen a Supabase Storage
-      await Supabase.instance.client.storage.from('avatars').upload(
-        fileName, 
-        File(_profileImagePath!),
-        fileOptions: FileOptions(upsert: true)
-      );
 
-      // Obtener URL pública de la imagen
-      final imageUrl = Supabase.instance.client.storage.from('avatars').getPublicUrl(fileName);
+      await Supabase.instance.client.storage.from('avatars').upload(
+            fileName,
+            File(_profileImagePath!),
+            fileOptions: const FileOptions(upsert: true),
+          );
+
+      final imageUrl =
+          Supabase.instance.client.storage.from('avatars').getPublicUrl(fileName);
 
       return imageUrl;
     } catch (error) {
@@ -80,39 +77,32 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
     });
 
     try {
-      // Subir imagen si se seleccionó una nueva
       String? imageUrl;
       if (_profileImagePath != null) {
         imageUrl = await _subirImagen();
       }
 
-      // Preparar datos para actualizar
       Map<String, dynamic> updateData = {
         'full_name': _nombreController.text,
         'phone_number': _telefonoController.text,
         'birth_date': _fechaNacimientoController.text,
       };
 
-      // Añadir URL de imagen si se subió una nueva
       if (imageUrl != null) {
         updateData['avatar_url'] = imageUrl;
       }
 
-      // Actualizar en la base de datos
       await Supabase.instance.client
-        .from('users')
-        .update(updateData)
-        .eq('user_id', widget.user.id);
+          .from('users')
+          .update(updateData)
+          .eq('user_id', widget.user.id);
 
-      // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Perfil actualizado con éxito')),
+        const SnackBar(content: Text('Perfil actualizado con éxito')),
       );
 
-      // Regresar a la pantalla anterior
       Navigator.of(context).pop(true);
     } catch (error) {
-      // Mostrar error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al actualizar perfil: $error')),
       );
@@ -127,15 +117,15 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Perfil'),
+        title: const Text('Editar Perfil'),
         centerTitle: true,
+        backgroundColor: const Color(0xFF892E2E),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Foto de perfil con opción de edición
             GestureDetector(
               onTap: _pickImage,
               child: Stack(
@@ -144,24 +134,26 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                     radius: 80,
                     backgroundColor: Colors.grey[300],
                     backgroundImage: _profileImagePath != null
-                      ? FileImage(File(_profileImagePath!))
-                      : (widget.user.userMetadata?['avatar_url'] != null
-                        ? NetworkImage(widget.user.userMetadata!['avatar_url'])
-                        : AssetImage('assets/images/person.png') as ImageProvider),
-                    child: _profileImagePath == null && widget.user.userMetadata?['avatar_url'] == null
-                      ? Icon(Icons.person, color: Colors.white, size: 40)
-                      : null,
+                        ? FileImage(File(_profileImagePath!))
+                        : (widget.profileData['avatar_url'] != null
+                            ? NetworkImage(widget.profileData['avatar_url'])
+                            : const AssetImage('assets/images/person.png')
+                                as ImageProvider),
+                    child: _profileImagePath == null &&
+                            widget.profileData['avatar_url'] == null
+                        ? const Icon(Icons.person, color: Colors.white, size: 40)
+                        : null,
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF892E2E),
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.edit, color: Colors.white),
+                        icon: const Icon(Icons.edit, color: Colors.white),
                         onPressed: _pickImage,
                       ),
                     ),
@@ -169,36 +161,27 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                 ],
               ),
             ),
-            
-            SizedBox(height: 20),
-            
-            // Campo de nombre
+            const SizedBox(height: 20),
             TextField(
               controller: _nombreController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Nombre Completo',
                 border: OutlineInputBorder(),
               ),
             ),
-            
-            SizedBox(height: 15),
-            
-            // Campo de teléfono
+            const SizedBox(height: 15),
             TextField(
               controller: _telefonoController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Teléfono',
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.phone,
             ),
-            
-            SizedBox(height: 15),
-            
-            // Campo de fecha de nacimiento
+            const SizedBox(height: 15),
             TextField(
               controller: _fechaNacimientoController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Fecha de Nacimiento',
                 border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.calendar_today),
@@ -211,27 +194,24 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                   firstDate: DateTime(1900),
                   lastDate: DateTime.now(),
                 );
-                
                 if (pickedDate != null) {
                   setState(() {
-                    _fechaNacimientoController.text = 
-                      '${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}';
+                    _fechaNacimientoController.text =
+                        '${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}';
                   });
                 }
               },
             ),
-            
-            SizedBox(height: 20),
-            
-            // Botón de guardar
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _isLoading ? null : _guardarCambios,
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
+                backgroundColor: const Color(0xFF892E2E),
               ),
-              child: _isLoading 
-                ? CircularProgressIndicator() 
-                : Text('Guardar Cambios'),
+              child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Guardar Cambios'),
             ),
           ],
         ),
@@ -241,7 +221,6 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
 
   @override
   void dispose() {
-    // Limpiar controladores
     _nombreController.dispose();
     _telefonoController.dispose();
     _fechaNacimientoController.dispose();
