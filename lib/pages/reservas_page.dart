@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'agendar_evento.dart';
 import 'principal_page.dart';
+import 'edit_event.dart'; // Importa la página de edición
 
 class ReservasPage extends StatefulWidget {
   const ReservasPage({super.key});
@@ -134,7 +135,22 @@ class _ReservasPageState extends State<ReservasPage> {
                                   _buildInfoRow(Icons.attach_money, 'Precio: \$${reserva['monto'] ?? '0'}'),
                                 ],
                               ),
-                              trailing: const Icon(Icons.event, color: Color(0xFF892E2E)),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Color(0xFF892E2E)),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditEventPage(eventData: reserva),
+                                        ),
+                                      ).then((_) => _fetchReservas());
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -143,8 +159,8 @@ class _ReservasPageState extends State<ReservasPage> {
                 ),
               ),
         floatingActionButton: SizedBox(
-          width: 90, // Ancho del botón flotante
-          height: 40, // Alto del botón flotante
+          width: 90,
+          height: 40,
           child: FloatingActionButton.extended(
             onPressed: () {
               Navigator.push(
@@ -153,18 +169,18 @@ class _ReservasPageState extends State<ReservasPage> {
               );
             },
             backgroundColor: const Color(0xFF892E2E),
-            icon: const Icon(Icons.add, color: Colors.white, size: 15), // Tamaño del ícono
+            icon: const Icon(Icons.add, color: Colors.white, size: 15),
             label: Text(
               'Agendar',
               style: GoogleFonts.roboto(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 12, // Tamaño del texto
+                fontSize: 12,
               ),
             ),
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat, // Posición del botón flotante
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }

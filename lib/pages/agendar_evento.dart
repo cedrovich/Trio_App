@@ -367,7 +367,7 @@ class _AgendarEventoPageState extends State<AgendarEventoPage> {
                         SizedBox(height: 16),
                         _buildTextField(
                           controller: _detallesAdicionalesController,
-                          label: 'Detalles Adicionales',
+                          label: 'Detalles Adicionales y Ubicacion del Evento',
                           maxLines: 3,
                         ),
                       ],
