@@ -102,6 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': email,
         'birth_date': _birthDate!.toIso8601String(),
         'phone_number': phoneNumber,
+        'role': 'cliente', // Se agrega el rol directamente en la base de datos
       }).select().single();
 
       if (insertResponse.error != null) {
@@ -292,10 +293,10 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
-extension on AuthResponse {
+extension on PostgrestMap {
   get error => null;
 }
 
-extension on PostgrestMap {
+extension on AuthResponse {
   get error => null;
 }

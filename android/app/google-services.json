@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "536586094737",
+    "project_id": "trioapp-7483a",
+    "storage_bucket": "trioapp-7483a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536586094737:android:368267ddb6839ac2f8d730",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_trio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrpELnwUp0rPJwI3CyXxgY-QGFv2tb0BE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536586094737:android:e7681a4ae9a189e1f8d730",
+        "android_client_info": {
+          "package_name": "trio.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrpELnwUp0rPJwI3CyXxgY-QGFv2tb0BE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
