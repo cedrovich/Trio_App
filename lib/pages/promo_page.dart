@@ -1,6 +1,7 @@
 // ignore_for_file: unused_field
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_trio/pages/evento_gratis.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -159,12 +160,23 @@ class _PromoPageState extends State<PromoPage> {
                     Center(
                       child: ElevatedButton(
                         onPressed: _hasPromotion
-                            ? () {
-                                // Lógica para redirigir a la página de reservas gratis
-                              }
-                            : () {
-                                // Lógica para redirigir a la página de reservas normales
-                              },
+                        ? () {
+                            Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (context) => EventoGratisPage())
+                            );
+                          }
+                        : () {
+                            // Existing logic for normal event booking
+                            // You might want to navigate to your regular booking page
+                          },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF892E2E),
+                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
                         child: Text(
                           _hasPromotion
                               ? 'Agendar evento gratis'
@@ -172,13 +184,6 @@ class _PromoPageState extends State<PromoPage> {
                           style: GoogleFonts.roboto(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF892E2E),
-                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
                       ),

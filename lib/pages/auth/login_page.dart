@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_trio/pages/auth/recuperar_contrase%C3%B1a.dart';
 import '../principal_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'register_page.dart';
@@ -148,6 +149,27 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Text(
                     '¿No tienes cuenta? Regístrate aquí',
+                    style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RecuperarContrasenaPage(), // Redirige a la pantalla de recuperación
+                      ),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Color(0xFF892E2E), // Color del texto
+                  ),
+                  child: Text(
+                    '¿Olvidaste tu contraseña? Recupérala aquí',
                     style: GoogleFonts.roboto(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
