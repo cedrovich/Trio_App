@@ -1,32 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RecuperarContrasenaPage extends StatefulWidget {
   const RecuperarContrasenaPage({Key? key}) : super(key: key);
 
   @override
-  _RecuperarContrasenaPageState createState() => _RecuperarContrasenaPageState();
+  _RecuperarContrasenaPageState createState() =>
+      _RecuperarContrasenaPageState();
 }
 
 class _RecuperarContrasenaPageState extends State<RecuperarContrasenaPage> {
   final TextEditingController _emailController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  void _recuperarContrasena() {
-    if (_formKey.currentState!.validate()) {
-      // Aquí implementarías la lógica de envío de correo de recuperación
-      // Podrías usar un servicio como Firebase Authentication o tu propio backend
+  Future<void> _recuperarContrasena() async {
+  if (_formKey.currentState!.validate()) {
+    final email = _emailController.text.trim();
+
+    try {
+      // Llama a resetPasswordForEmail con la opción redirectTo
+      await Supabase.instance.client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'https://cedrovich.github.io/forgot_password_page/',
+      );
+
+      // Si no hay errores, muestra el mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Se ha enviado un correo de recuperación a ${_emailController.text}',
+            'Se ha enviado un correo de recuperación a $email',
             style: GoogleFonts.roboto(),
           ),
           backgroundColor: const Color(0xFF892E2E),
         ),
       );
+    } catch (error) {
+      // Manejo de errores (ya que el método no devuelve directamente un error)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Ocurrió un error al enviar el correo: $error',
+            style: GoogleFonts.roboto(),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +75,6 @@ class _RecuperarContrasenaPageState extends State<RecuperarContrasenaPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Comenté la imagen ya que necesitarías agregarla a tus assets
-              // Image.asset(
-              //   'assets/password_reset.png', 
-              //   height: 200,
-              // ),
               const SizedBox(height: 20),
               Text(
                 'Recupera tu contraseña',
@@ -86,15 +105,16 @@ class _RecuperarContrasenaPageState extends State<RecuperarContrasenaPage> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Color(0xFF892E2E), width: 2),
+                    borderSide:
+                        const BorderSide(color: Color(0xFF892E2E), width: 2),
                   ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingresa tu correo electrónico';
                   }
-                  // Validación básica de correo electrónico
-                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                  final emailRegex =
+                      RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                   if (!emailRegex.hasMatch(value)) {
                     return 'Ingresa un correo electrónico válido';
                   }
