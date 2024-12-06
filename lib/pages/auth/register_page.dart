@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -225,29 +226,35 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-    bool obscureText = false,
-  }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: Color(0xFF892E2E)),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF892E2E), width: 2.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        prefixIcon: Icon(icon, color: Color(0xFF892E2E)),
+  required TextEditingController controller,
+  required String label,
+  required IconData icon,
+  TextInputType? keyboardType,
+  bool obscureText = false,
+}) {
+  return TextFormField(
+    controller: controller,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Color(0xFF892E2E)),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFF892E2E), width: 2.0),
       ),
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-    );
-  }
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      prefixIcon: Icon(icon, color: Color(0xFF892E2E)),
+    ),
+    keyboardType: keyboardType,
+    obscureText: obscureText,
+    inputFormatters: label == 'Número de Teléfono'
+        ? [
+            LengthLimitingTextInputFormatter(10),
+            FilteringTextInputFormatter.digitsOnly,
+          ]
+        : null,
+  );
+}
 
   Widget _buildDatePicker() {
     return LayoutBuilder(

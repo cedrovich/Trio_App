@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -253,6 +254,7 @@ class _EventoGratisPageState extends State<EventoGratisPage> {
                           controller: _contactoController,
                           label: 'Número de Contacto',
                           keyboardType: TextInputType.phone,
+                          isPhoneNumber: true, // Activa las restricciones para 10 dígitos
                         ),
                         SizedBox(height: 16),
                         _buildTextField(
@@ -291,31 +293,39 @@ class _EventoGratisPageState extends State<EventoGratisPage> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-    int? maxLines,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Color(0xFF892E2E)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Color(0xFF892E2E), width: 2),
-        ),
+Widget _buildTextField({
+  required TextEditingController controller,
+  required String label,
+  TextInputType? keyboardType,
+  String? Function(String?)? validator,
+  int? maxLines,
+  bool? isPhoneNumber, // Nuevo parámetro opcional
+}) {
+  return TextFormField(
+    controller: controller,
+    keyboardType: keyboardType,
+    maxLines: maxLines,
+    decoration: InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Color(0xFF892E2E)),
       ),
-      validator: validator,
-    );
-  }
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Color(0xFF892E2E), width: 2),
+      ),
+    ),
+    validator: validator,
+    inputFormatters: isPhoneNumber == true
+        ? [
+            LengthLimitingTextInputFormatter(10), // Máximo 10 caracteres
+            FilteringTextInputFormatter.digitsOnly, // Solo números
+          ]
+        : null,
+  );
+}
+
 
   Widget _buildDateField({
     required TextEditingController controller,
