@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'reservas_page.dart';
 import 'perfil_page.dart';
 import 'promo_page.dart';
@@ -264,12 +265,12 @@ class _HomeContentState extends State<HomeContent> {
                 url: 'https://www.facebook.com/profile.php?id=100063542473650',
               ),
               _buildContactButton(
-                icon: Icons.camera_alt,
+                icon: FontAwesomeIcons.instagram,
                 color: const Color(0xFF892E2E),
                 url: 'https://www.instagram.com/semblanzastrio',
               ),
               _buildContactButton(
-                icon: Icons.video_library,
+                icon: FontAwesomeIcons.youtube,
                 color: const Color(0xFF892E2E),
                 url: 'https://www.youtube.com',
               ),
