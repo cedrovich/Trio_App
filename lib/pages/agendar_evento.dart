@@ -539,4 +539,3 @@ Future<void> _fetchPrecios() async {
 extension on PostgrestFilterBuilder<PostgrestList> {
   throwOnError() {}
 }
-

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -59,6 +58,16 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
+    if (phoneNumber.length != 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor ingresa un número de teléfono válido de 10 dígitos.', style: TextStyle(color: Colors.white)),
+          backgroundColor: Color(0xFF892E2E),
+        ),
+      );
+      return;
+    }
+
     if (_birthDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -75,10 +84,10 @@ class _RegisterPageState extends State<RegisterPage> {
         password: password,
       );
 
-      if (response.error != null) {
+      if (response.user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al registrar usuario: ${response.error!.message}', style: TextStyle(color: Colors.white)),
+            content: Text('Error al registrar usuario. Inténtalo de nuevo.', style: TextStyle(color: Colors.white)),
             backgroundColor: Color(0xFF892E2E),
           ),
         );
@@ -104,13 +113,13 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': email,
         'birth_date': _birthDate!.toIso8601String(),
         'phone_number': phoneNumber,
-        'role': 'cliente', // Se agrega el rol directamente en la base de datos
+        'role': 'cliente',
       }).select().single();
 
-      if (insertResponse.error != null) {
+      if (insertResponse == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al insertar datos: ${insertResponse.error!.message}', style: TextStyle(color: Colors.white)),
+            content: Text('Error al insertar datos: la respuesta es nula', style: TextStyle(color: Colors.white)),
             backgroundColor: Color(0xFF892E2E),
           ),
         );
@@ -227,42 +236,42 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildTextField({
-  required TextEditingController controller,
-  required String label,
-  required IconData icon,
-  TextInputType? keyboardType,
-  bool obscureText = false,
-}) {
-  return TextFormField(
-    controller: controller,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: Color(0xFF892E2E)),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Color(0xFF892E2E), width: 2.0),
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Color(0xFF892E2E)),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF892E2E), width: 2.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        prefixIcon: Icon(icon, color: Color(0xFF892E2E)),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.grey.shade300),
-      ),
-      prefixIcon: Icon(icon, color: Color(0xFF892E2E)),
-    ),
-    keyboardType: keyboardType,
-    obscureText: obscureText,
-    inputFormatters: label == 'Número de Teléfono'
-        ? [
-            LengthLimitingTextInputFormatter(10),
-            FilteringTextInputFormatter.digitsOnly,
-          ]
-        : null,
-  );
-}
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      inputFormatters: label == 'Número de Teléfono'
+          ? [
+              LengthLimitingTextInputFormatter(10),
+              FilteringTextInputFormatter.digitsOnly,
+            ]
+          : null,
+    );
+  }
 
   Widget _buildDatePicker() {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: constraints.maxWidth, // Limita el ancho máximo al tamaño de la pantalla
+            maxWidth: constraints.maxWidth,
           ),
           child: InkWell(
             onTap: () => _selectBirthDate(context),
@@ -287,7 +296,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ? 'Selecciona tu fecha de nacimiento'
                           : DateFormat('yyyy-MM-dd').format(_birthDate!),
                       style: TextStyle(fontSize: 16),
-                      overflow: TextOverflow.ellipsis, // Ajusta el texto si es muy largo
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Icon(Icons.arrow_drop_down, color: Color(0xFF892E2E)),
@@ -299,12 +308,4 @@ class _RegisterPageState extends State<RegisterPage> {
       },
     );
   }
-}
-
-extension on PostgrestMap {
-  get error => null;
-}
-
-extension on AuthResponse {
-  get error => null;
 }

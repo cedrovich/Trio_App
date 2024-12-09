@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController.text.trim(),
       );
 
-      if (response.user != null) {
+      if (response.session?.user != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const PrincipalPage()),
@@ -31,7 +31,10 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al iniciar sesión', style: TextStyle(color: Colors.white)),
+            content: Text(
+              'Error al iniciar sesión',
+              style: TextStyle(color: Colors.white),
+            ),
             backgroundColor: Color(0xFF892E2E),
           ),
         );
@@ -39,7 +42,47 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e', style: TextStyle(color: Colors.white)),
+          content: Text(
+            'Error: $e',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Color(0xFF892E2E),
+        ),
+      );
+    }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    try {
+      await Supabase.instance.client.auth.signInWithOAuth(
+        OAuthProvider.google,
+      );
+
+      // Agregamos una verificación del usuario después de la redirección
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PrincipalPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'No se pudo completar el inicio de sesión con Google',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Color(0xFF892E2E),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Error al iniciar sesión con Google: $e',
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: Color(0xFF892E2E),
         ),
       );
@@ -57,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         backgroundColor: Color(0xFF892E2E),
         elevation: 0,
-        automaticallyImplyLeading: false, // Oculta la flecha de retroceso
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -69,9 +112,9 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 40),
                 Center(
                   child: Image.asset(
-                    'lib/assets/images/logo_trio.png', // Ruta al logo
-                    width: 190, // Ancho de la imagen
-                    height: 100, // Altura de la imagen
+                    'lib/assets/images/logo_trio.png',
+                    width: 190,
+                    height: 100,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -137,6 +180,26 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _loginWithGoogle,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                  child: Text(
+                    'Iniciar sesión con Google',
+                    style: GoogleFonts.roboto(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -161,12 +224,12 @@ class _LoginPageState extends State<LoginPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const RecuperarContrasenaPage(), // Redirige a la pantalla de recuperación
+                        builder: (context) => const RecuperarContrasenaPage(),
                       ),
                     );
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: Color(0xFF892E2E), // Color del texto
+                    foregroundColor: Color(0xFF892E2E),
                   ),
                   child: Text(
                     '¿Olvidaste tu contraseña? Recupérala aquí',

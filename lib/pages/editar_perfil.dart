@@ -72,6 +72,13 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
   }
 
   Future<void> _guardarCambios() async {
+    if (_telefonoController.text.length < 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Número de teléfono incompleto')),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -177,6 +184,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.phone,
+              maxLength: 10, // Limita a 10 caracteres
             ),
             const SizedBox(height: 15),
             TextField(
