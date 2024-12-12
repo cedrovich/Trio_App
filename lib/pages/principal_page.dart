@@ -22,13 +22,15 @@ class _PrincipalPageState extends State<PrincipalPage> {
 
   void _logout(BuildContext context) async {
     await Supabase.instance.client.auth.signOut();
-    Navigator.pushReplacementNamed(context, '/login');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sesión cerrada', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xFF892E2E),
-      ),
-    );
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/login');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sesión cerrada', style: TextStyle(color: Colors.white)),
+          backgroundColor: Color(0xFF892E2E),
+        ),
+      );
+    }
   }
 
   final List<Widget> _paginas = [
@@ -100,20 +102,24 @@ class _HomeContentState extends State<HomeContent> {
           .from('carousel')
           .select('title, image_url, description, additional_details');
 
-      setState(() {
-        eventos = List<Map<String, dynamic>>.from(response);
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          eventos = List<Map<String, dynamic>>.from(response);
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al cargar el carrusel: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al cargar el carrusel: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -272,7 +278,7 @@ class _HomeContentState extends State<HomeContent> {
               _buildContactButton(
                 icon: FontAwesomeIcons.youtube,
                 color: const Color(0xFF892E2E),
-                url: 'https://www.youtube.com',
+                url: 'https://www.youtube.com/@triosemblanzas3717',
               ),
               _buildContactButton(
                 icon: Icons.tiktok,
@@ -300,7 +306,7 @@ class _HomeContentState extends State<HomeContent> {
       ),
     );
   }
-
+  
   Future<void> _launchURL(String url) async {
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));

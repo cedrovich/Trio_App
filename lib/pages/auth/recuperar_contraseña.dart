@@ -15,42 +15,40 @@ class _RecuperarContrasenaPageState extends State<RecuperarContrasenaPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<void> _recuperarContrasena() async {
-  if (_formKey.currentState!.validate()) {
-    final email = _emailController.text.trim();
+    if (_formKey.currentState!.validate()) {
+      final email = _emailController.text.trim();
 
-    try {
-      // Llama a resetPasswordForEmail con la opción redirectTo
-      await Supabase.instance.client.auth.resetPasswordForEmail(
-        email,
-        redirectTo: 'https://cedrovich.github.io/forgot_password_page/',
-      );
+      try {
+        // Llama a resetPasswordForEmail con la nueva URL de Netlify
+        await Supabase.instance.client.auth.resetPasswordForEmail(
+          email,
+          redirectTo: 'https://semblanzas-forgot-password.netlify.app/',
+        );
 
-      // Si no hay errores, muestra el mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Se ha enviado un correo de recuperación a $email',
-            style: GoogleFonts.roboto(),
+        // Mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Se ha enviado un correo de recuperación a $email. Verifica tu bandeja de entrada.',
+              style: GoogleFonts.roboto(),
+            ),
+            backgroundColor: const Color(0xFF892E2E),
           ),
-          backgroundColor: const Color(0xFF892E2E),
-        ),
-      );
-    } catch (error) {
-      // Manejo de errores (ya que el método no devuelve directamente un error)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Ocurrió un error al enviar el correo: $error',
-            style: GoogleFonts.roboto(),
+        );
+      } catch (error) {
+        // Manejo de errores
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Ocurrió un error al enviar el correo: $error',
+              style: GoogleFonts.roboto(),
+            ),
+            backgroundColor: Colors.red,
           ),
-          backgroundColor: Colors.red,
-        ),
-      );
+        );
+      }
     }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +85,7 @@ class _RecuperarContrasenaPageState extends State<RecuperarContrasenaPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Ingresa tu correo electrónico y te enviaremos instrucciones para recuperar tu contraseña',
+                'Ingresa tu correo electrónico y te enviaremos instrucciones para recuperar tu contraseña.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.roboto(
                   fontSize: 16,

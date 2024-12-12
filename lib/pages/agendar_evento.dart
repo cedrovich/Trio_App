@@ -178,16 +178,102 @@ Future<void> _fetchPrecios() async {
 
 
 
-  Future<void> _guardarReserva() async {
-    if (!_formKey.currentState!.validate() || isLoadingPrecios) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Espera a que se carguen los precios o completa el formulario.')),
-      );
-      return;
-    }
-
-    // Lógica para guardar la reserva permanece igual
+Future<void> _guardarReserva() async {
+  if (!_formKey.currentState!.validate() || isLoadingPrecios) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Espera a que se carguen los precios o completa el formulario.'),
+      ),
+    );
+    return;
   }
+
+  if (selectedTipoEvento == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Por favor selecciona un tipo de evento.'),
+      ),
+    );
+    return;
+  }
+
+  // Validación estricta del número de teléfono
+  final telefono = _contactoController.text.trim();
+  if (telefono.length != 10 || int.tryParse(telefono) == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Favor de insertar un número de teléfono válido.',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Color(0xFFD32F2F), // Color rojo para error
+      ),
+    );
+    return;
+  }
+
+  // Obtén el usuario autenticado actual
+  final currentUser = Supabase.instance.client.auth.currentUser;
+  if (currentUser == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor inicia sesión antes de agendar un evento.')),
+    );
+    return;
+  }
+
+  final reservaData = {
+    'tipo_evento': selectedTipoEvento,
+    'fecha': _fechaController.text,
+    'hora': _horaController.text,
+    'contacto': telefono, // Aseguramos que es el número de teléfono validado
+    'detalles_adicionales': _detallesAdicionalesController.text,
+    'monto': _precioTotal.toInt(), // Convierte el precio total a entero
+    'correo': currentUser.email, // Asigna el correo desde el usuario autenticado
+    if (selectedTipoEvento == 'Serenata') 'canciones': int.parse(_cancionesController.text),
+    if (selectedTipoEvento == 'Evento') ...{
+      'horas': int.parse(_horasController.text),
+      'sonido': selectedSonido,
+    },
+  };
+
+  try {
+    final response = await Supabase.instance.client
+        .from('eventos') // Asegúrate de que sea la tabla correcta
+        .insert(reservaData)
+        .select();
+
+    if (response != null && response.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Evento agendado exitosamente.',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Color(0xFF4CAF50), // Color verde para éxito
+        ),
+      );
+
+      _formKey.currentState?.reset();
+      setState(() {
+        selectedTipoEvento = null;
+        selectedSonido = null;
+        _precioTotal = 0.0;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al guardar el evento: No se recibieron datos de respuesta.'),
+        ),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error inesperado: $e'),
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -539,3 +625,4 @@ Future<void> _fetchPrecios() async {
 extension on PostgrestFilterBuilder<PostgrestList> {
   throwOnError() {}
 }
+

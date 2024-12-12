@@ -41,26 +41,32 @@ class _PromoPageState extends State<PromoPage> {
         int totalReservas = response.length;
         int currentCycle = totalReservas % 5;
 
-        setState(() {
-          _reservasCount = totalReservas;
-          _currentCycleCount = currentCycle;
-          _hasPromotion = currentCycle == 0 && totalReservas > 0;
-        });
+        if (mounted) {
+          setState(() {
+            _reservasCount = totalReservas;
+            _currentCycleCount = currentCycle;
+            _hasPromotion = currentCycle == 0 && totalReservas > 0;
+          });
+        }
       }
 
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al cargar reservas: $e'),
-          backgroundColor: Color(0xFF892E2E),
-        ),
-      );
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al cargar reservas: $e'),
+            backgroundColor: const Color(0xFF892E2E),
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -77,13 +83,13 @@ class _PromoPageState extends State<PromoPage> {
         ),
         centerTitle: true,
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xFF892E2E),
+        backgroundColor: const Color(0xFF892E2E),
         elevation: 0,
       ),
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF892E2E)),
+                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF892E2E)),
               ),
             )
           : SingleChildScrollView(
@@ -97,7 +103,7 @@ class _PromoPageState extends State<PromoPage> {
                       style: GoogleFonts.roboto(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF892E2E),
+                        color: const Color(0xFF892E2E),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -116,7 +122,7 @@ class _PromoPageState extends State<PromoPage> {
                               style: GoogleFonts.roboto(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF892E2E),
+                                color: const Color(0xFF892E2E),
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -129,12 +135,12 @@ class _PromoPageState extends State<PromoPage> {
                                 style: GoogleFonts.roboto(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF892E2E),
+                                  color: const Color(0xFF892E2E),
                                 ),
                               ),
                               progressColor: _hasPromotion
                                   ? Colors.green
-                                  : Color(0xFF892E2E),
+                                  : const Color(0xFF892E2E),
                               backgroundColor: Colors.grey[300]!,
                               animation: true,
                               animationDuration: 1200,
@@ -149,7 +155,7 @@ class _PromoPageState extends State<PromoPage> {
                               style: GoogleFonts.roboto(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: _hasPromotion ? Colors.green : Color(0xFF892E2E),
+                                color: _hasPromotion ? Colors.green : const Color(0xFF892E2E),
                               ),
                             ),
                           ],
@@ -160,19 +166,20 @@ class _PromoPageState extends State<PromoPage> {
                     Center(
                       child: ElevatedButton(
                         onPressed: _hasPromotion
-                        ? () {
-                            Navigator.push(
-                              context, 
-                              MaterialPageRoute(builder: (context) => EventoGratisPage())
-                            );
-                          }
-                        : () {
-                            // Existing logic for normal event booking
-                            // You might want to navigate to your regular booking page
-                          },
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const EventoGratisPage()),
+                                );
+                              }
+                            : () {
+                                // Aquí puedes manejar la lógica para reservas normales
+                              },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF892E2E),
-                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                          backgroundColor: const Color(0xFF892E2E),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),

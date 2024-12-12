@@ -23,33 +23,36 @@ class _ReservasPageState extends State<ReservasPage> {
   }
 
   Future<void> _fetchReservas() async {
-    try {
-      final correo = Supabase.instance.client.auth.currentUser?.email;
-      if (correo == null) {
-        throw 'No se encontró el correo del usuario autenticado.';
-      }
-
-      final response = await Supabase.instance.client
-          .from('eventos')
-          .select()
-          .eq('correo', correo);
-
-      setState(() {
-        _reservas = List<Map<String, dynamic>>.from(response);
-        _isLoading = false;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al cargar reservas: $e'),
-          backgroundColor: const Color(0xFF892E2E),
-        ),
-      );
-      setState(() {
-        _isLoading = false;
-      });
+  try {
+    final correo = Supabase.instance.client.auth.currentUser?.email;
+    if (correo == null) {
+      throw 'No se encontró el correo del usuario autenticado.';
     }
+
+    final response = await Supabase.instance.client
+        .from('eventos')
+        .select()
+        .eq('correo', correo);
+
+    if (!mounted) return; // Verifica si el widget sigue montado
+
+    setState(() {
+      _reservas = List<Map<String, dynamic>>.from(response);
+      _isLoading = false;
+    });
+  } catch (e) {
+    if (!mounted) return; // Verifica si el widget sigue montado
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error al cargar reservas: $e'),
+        backgroundColor: const Color(0xFF892E2E),
+      ),
+    );
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
