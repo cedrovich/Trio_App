@@ -19,11 +19,7 @@ class _RecuperarContrasenaPageState extends State<RecuperarContrasenaPage> {
       final email = _emailController.text.trim();
 
       try {
-        // Llama a resetPasswordForEmail con la nueva URL de Netlify
-        await Supabase.instance.client.auth.resetPasswordForEmail(
-          email,
-          redirectTo: 'https://semblanzas-forgot-password.netlify.app/',
-        );
+        await Supabase.instance.client.auth.resetPasswordForEmail(email);
 
         // Mensaje de éxito
         ScaffoldMessenger.of(context).showSnackBar(
